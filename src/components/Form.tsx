@@ -1,22 +1,54 @@
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Button, HStack, Input } from "@chakra-ui/react";
 import React, { FormEvent, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { checkIfUserExists } from "../service/api";
+import NotFound from "./NotFound";
 
 const Form = () => {
   const [user, setUser] = useState({ username: "", password: "" });
+  const [count, setCount] = useState(0);
+  const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
+    document.title = `number of failures: ${count}`;
+  }, [count]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Data fetching logic here
     console.log("testing");
-  }, []);
+  }, []); // Empty array ensures this runs only once on mount
 
   const check = async () => {
     try {
       const response = await checkIfUserExists(user.username);
       console.log(response);
+
+      //const parsedData = JSON.parse(response);
+      if ("status" in response) {
+        const status = response["status"];
+        console.log("status: " + status);
+
+        if (status === "found") {
+          if ("token" in response) {
+            const token = response["token"];
+            console.log("token: " + token);
+          }
+
+          navigate("/user/" + user.username);
+          //navigate("/test");
+        } else {
+          setCount(count + 1);
+          setShowMessage(true);
+          navigate("xyz");
+        }
+      }
     } catch (err) {
       console.log(err);
+      setCount(count + 1);
+      //setShowMessage(true);
     } finally {
       console.log("finally");
     }
@@ -57,7 +89,7 @@ const Form = () => {
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           value={user.password}
           id="password"
-          type="text"
+          type="password"
           className="form-control"
         />
       </div>
@@ -68,6 +100,9 @@ const Form = () => {
           Test
         </Link>
       </HStack>
+      {showMessage && (
+        <div style={{ color: "red" }}>You are not registered!</div>
+      )}
     </form>
   );
 };
