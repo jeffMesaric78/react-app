@@ -1,64 +1,62 @@
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Button, HStack, Input } from "@chakra-ui/react";
 import React, { FormEvent, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { checkIfUserExists } from "../service/api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { checkIfUserExists, checkIfUserExists2 } from "../service/api";
 import NotFound from "./NotFound";
+import UserProfile from "./UserProfile";
 
-const Form = () => {
+const UserForm = () => {
   const [user, setUser] = useState({ username: "", password: "" });
-  const [count, setCount] = useState(0);
-  const [showMessage, setShowMessage] = useState(false);
+  //const [count, setCount] = useState(0);
+  //const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
 
-  useEffect(() => {
+  /*useEffect(() => {
     document.title = `number of failures: ${count}`;
-  }, [count]);
+  }, [count]);*/
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const m = location.state?.message;
 
   useEffect(() => {
     // Data fetching logic here
-    console.log("testing");
+    //console.log("user form initial effect");
+    //setMessage(location.state?.message);
+    //console.log("message: " + message);
+    //navigate(location.pathname, { replace: true, state: {} });
   }, []); // Empty array ensures this runs only once on mount
 
-  const check = async () => {
-    try {
-      const response = await checkIfUserExists(user.username);
-      console.log(response);
+  useEffect(() => {
+    // Data fetching logic here
+    //console.log("testing");
 
-      //const parsedData = JSON.parse(response);
-      if ("status" in response) {
-        const status = response["status"];
-        console.log("status: " + status);
+    console.log(m);
 
-        if (status === "found") {
-          if ("token" in response) {
-            const token = response["token"];
-            console.log("token: " + token);
-          }
+    //setShowMessage(!!location.state?.message);
+    setMessage(m);
 
-          navigate("/user/" + user.username);
-          //navigate("/test");
-        } else {
-          setCount(count + 1);
-          setShowMessage(true);
-          navigate("xyz");
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setCount(count + 1);
-      //setShowMessage(true);
-    } finally {
-      console.log("finally");
-    }
-  };
+    //console.log(showMessage);
+    console.log(message);
+
+    navigate(location.pathname, {});
+
+    //const newState = { newKey: 'newValue', anotherKey: 123 };
+    // Update location.state
+    //navigate(location.pathname, { replace: true, state: newState });
+  }, [message]); // Empty array ensures this runs only once on mount
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    console.log(user);
+    //console.log(user);
 
-    check();
+    navigate("/user/" + user.username, {
+      state: { query: user, previousUrl: location.pathname },
+    });
+    //return <UserProfile username={user.username} password={user.password} />;
+
+    //check();
   };
 
   return (
@@ -95,16 +93,13 @@ const Form = () => {
       </div>
       <HStack>
         <Button type="submit">Login</Button>
-        <Button type="button">Not registered?</Button>
-        <Link to="/test" className="btn btn-primary">
-          Test
+        <Link to="/register" className="btn btn-primary">
+          Not registered?
         </Link>
       </HStack>
-      {showMessage && (
-        <div style={{ color: "red" }}>You are not registered!</div>
-      )}
+      {message && <div style={{ color: "red" }}>{message}lsdkjflkd</div>}
     </form>
   );
 };
 
-export default Form;
+export default UserForm;
