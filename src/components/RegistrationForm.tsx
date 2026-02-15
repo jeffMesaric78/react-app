@@ -11,8 +11,6 @@ const RegistrationForm = () => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     console.log(user);
-
-    //check();
   };
 
   return (

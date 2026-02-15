@@ -1,4 +1,8 @@
-function HomePage({ name }) {
+interface GreetingProps {
+  name: string;
+}
+
+function HomePage({ name }: GreetingProps) {
   return (
     <>
       <div>

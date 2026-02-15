@@ -1,62 +1,38 @@
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Button, HStack, Input } from "@chakra-ui/react";
-import React, { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { checkIfUserExists, checkIfUserExists2 } from "../service/api";
-import NotFound from "./NotFound";
-import UserProfile from "./UserProfile";
+
+export interface Query {
+  username: string;
+  password: string;
+}
 
 const UserForm = () => {
-  const [user, setUser] = useState({ username: "", password: "" });
-  //const [count, setCount] = useState(0);
-  //const [showMessage, setShowMessage] = useState(false);
+  const [query, setQuery] = useState<Query>({ username: "", password: "" });
   const [message, setMessage] = useState("");
-
-  /*useEffect(() => {
-    document.title = `number of failures: ${count}`;
-  }, [count]);*/
 
   const navigate = useNavigate();
   const location = useLocation();
   const m = location.state?.message;
 
-  useEffect(() => {
-    // Data fetching logic here
-    //console.log("user form initial effect");
-    //setMessage(location.state?.message);
-    //console.log("message: " + message);
-    //navigate(location.pathname, { replace: true, state: {} });
-  }, []); // Empty array ensures this runs only once on mount
+  useEffect(() => {}, []); // Empty array ensures this runs only once on mount
 
   useEffect(() => {
-    // Data fetching logic here
-    //console.log("testing");
-
     console.log(m);
-
-    //setShowMessage(!!location.state?.message);
     setMessage(m);
 
-    //console.log(showMessage);
     console.log(message);
 
+    //reset state once message has been set...
     navigate(location.pathname, {});
-
-    //const newState = { newKey: 'newValue', anotherKey: 123 };
-    // Update location.state
-    //navigate(location.pathname, { replace: true, state: newState });
   }, [message]); // Empty array ensures this runs only once on mount
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    //console.log(user);
 
-    navigate("/user/" + user.username, {
-      state: { query: user, previousUrl: location.pathname },
+    navigate("/user/" + query.username, {
+      state: { query: query, previousUrl: location.pathname },
     });
-    //return <UserProfile username={user.username} password={user.password} />;
-
-    //check();
   };
 
   return (
@@ -66,26 +42,20 @@ const UserForm = () => {
           Username
         </label>
         <input
-          onChange={(e) => setUser({ ...user, username: e.target.value })}
-          value={user.username}
+          onChange={(e) => setQuery({ ...query, username: e.target.value })}
+          value={query.username}
           id="username"
           type="text"
           className="form-control"
         />
       </div>
-      {/*<div className="mb-3">
-        <label htmlFor="age" className="form-label">
-          Age
-        </label>
-        <input id="age" type="number" className="form-control" />
-      </div>*/}
       <div className="mb-3">
         <label htmlFor="password" className="form-label">
           Password
         </label>
         <input
-          onChange={(e) => setUser({ ...user, password: e.target.value })}
-          value={user.password}
+          onChange={(e) => setQuery({ ...query, password: e.target.value })}
+          value={query.password}
           id="password"
           type="password"
           className="form-control"
@@ -97,7 +67,7 @@ const UserForm = () => {
           Not registered?
         </Link>
       </HStack>
-      {message && <div style={{ color: "red" }}>{message}lsdkjflkd</div>}
+      {message && <div style={{ color: "red" }}>{message}</div>}
     </form>
   );
 };

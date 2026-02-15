@@ -1,14 +1,13 @@
-import ListGroup from "./components/ListGroup";
 import UserForm from "./components/UserForm";
 import { Routes, Route } from "react-router-dom";
 import UserProfile from "./components/UserProfile";
 import NotFound from "./components/NotFound";
-import React, { FormEvent, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import HomePage from "./components/HomePage";
 import RegistrationForm from "./components/RegistrationForm";
 
 const useSubdomain = () => {
-  const [subdomain, setSubdomain] = useState(null);
+  const [subdomain, setSubdomain] = useState<string | null>();
 
   useEffect(() => {
     const host = window.location.host;
@@ -18,9 +17,10 @@ const useSubdomain = () => {
     // Adjust logic for localhost vs production domains
     if (host.includes("localhost")) {
       host.startsWith("localhost") ? setSubdomain(null) : setSubdomain(arr[0]);
+    } else if (host.startsWith("127.0.0.1") || host.startsWith("192.168")) {
+      setSubdomain(null);
     } else {
-      // For production, assume top-level domain and second-level domain exist
-      setSubdomain(arr.length > 2 ? arr[0] : null);
+      setSubdomain(null);
     }
   }, []);
 
@@ -31,7 +31,6 @@ function App() {
   const subdomain = useSubdomain();
   console.log(subdomain);
 
-  //subdomain == null &&
   return (
     <>
       {subdomain == null ? (
